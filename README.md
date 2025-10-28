@@ -11,3 +11,8 @@ To run the project locally, clone the repository and set up a virtual environmen
 git clone https://github.com/your-group/judiciary-info-system.git
 cd judiciary-info-system
 python -m venv venv
+
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
