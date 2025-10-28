@@ -5,3 +5,9 @@ The Judiciary Information System (JIS) is a Django-based web application designe
 This application is structured into multiple Django apps, each representing a specific module of the judiciary workflow. The **Cases** app handles the registration and tracking of court cases, storing details such as case numbers, parties involved, and statuses. The **Hearings** app manages court session dates and progress updates, while the **Judges** app maintains information about judicial officers and their case assignments. An optional **Users** app manages authentication, ensuring that only authorized staff—such as clerks, judges, and administrators—can access and update records. Each module interacts through Django’s ORM, providing secure and efficient database operations.
 
 The frontend interface is developed using **Bootstrap 5** for a responsive and professional design, featuring dashboards, modals, and data tables for interactive management. Users can easily view case details, add new cases through a modal form, and update hearing information. Collaboration and version control are managed via **Git and GitHub**, with each team member contributing through feature branches and pull requests to maintain clean, reviewed code. The project uses environment variables for configuration security and includes a `requirements.txt` file for dependency management.
+
+To run the project locally, clone the repository and set up a virtual environment:
+```bash
+git clone https://github.com/your-group/judiciary-info-system.git
+cd judiciary-info-system
+python -m venv venv
