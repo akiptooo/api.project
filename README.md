@@ -1,4 +1,4 @@
-Judiciary Information System - Case Management
+                                                                 Judiciary Information System - Case Management
 Project Overview
 The Judiciary Information System (JIS) is a Django-based web application designed to streamline and digitize court case management processes. The primary objective of this project is to replace inefficient, paper-based systems with a centralized digital platform, thereby addressing critical issues of data loss, inaccessibility, and procedural delays. The system provides an intuitive platform for managing case records, hearing schedules, judges’ assignments, and overall workflow within judicial institutions. By integrating Django’s robust backend with a clean Bootstrap-powered interface, the project aims to enhance transparency, accessibility, and efficiency in case handling and documentation. This is justified by the need to improve public trust in the judicial system through faster case resolution and real-time access to case statuses for authorized personnel.
 
@@ -9,9 +9,9 @@ User Interface & Development Workflow
 The frontend interface is developed using Bootstrap 5 for a responsive and professional design, featuring dashboards, modals, and data tables for interactive management. The objective here is to ensure the system is user-friendly and requires minimal training, which is crucial for widespread adoption among court staff with varying levels of technical expertise. Users can easily view case details, add new cases through a modal form, and update hearing information. Collaboration and version control are managed via GitHub, with each team member contributing through feature branches and pull requests to maintain a clean codebase. This approach is justified by the need for collaborative development while ensuring code quality and stability through systematic peer review.
 
 Local Installation Guide
+
 To run the project locally, clone the repository and set up a virtual environment:
 
-text
 git clone https://github.com/your-group/judiciary-info-system.git
 cd judiciary-info-system
 python -m venv venv
