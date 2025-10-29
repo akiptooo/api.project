@@ -1,159 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Judiciary Information System - Case Management</title>
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <style>
-    body {
-      background-color: #f5f6fa;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .sidebar {
-      height: 100vh;
-      background-color: #002b5c;
-      color: white;
-      padding-top: 1rem;
-    }
-    .sidebar a {
-      color: #cfd8dc;
-      text-decoration: none;
-      display: block;
-      padding: 10px 20px;
-    }
-    .sidebar a:hover {
-      background-color: #004080;
-      color: #fff;
-    }
-    .navbar {
-      background-color: #004080;
-      color: white;
-    }
-    .card {
-      border-radius: 12px;
-    }
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Judiciary Information System — Case Management</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container-fluid">
-  <div class="row">
+  <!-- Top Taskbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="brand-title">Judiciary Information System</div>
+    </div>
+    <div class="topbar-right">
+      <button id="logoutBtn" class="btn btn-ghost">Logout</button>
+    </div>
+  </header>
 
+  <!-- App layout -->
+  <div class="app">
     <!-- Sidebar -->
-    <nav class="col-md-2 sidebar">
-      <h4 class="px-3 mb-4">Court CMS</h4>
-      <a href="#">🏠 Dashboard</a>
-      <a href="#">📂 Cases</a>
-      <a href="#">📅 Hearings</a>
-      <a href="#">👩‍⚖️ Judges</a>
-      <a href="#">⚙️ Settings</a>
-      <hr style="border-color: rgba(255,255,255,0.2);">
-      <a href="#">🚪 Logout</a>
-    </nav>
-
-    <!-- Main Content -->
-    <main class="col-md-10 p-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Case Management</h2>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCaseModal">+ Add Case</button>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo">⚖️</div>
+        <div class="brand-name">Court CMS</div>
       </div>
 
-      <!-- Case List Table -->
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Registered Cases</h5>
-          <table class="table table-striped align-middle">
-            <thead class="table-dark">
+      <nav class="nav">
+        <a class="nav-link active" href="#">Dashboard</a>
+        <a class="nav-link" href="#">Cases</a>
+        <a class="nav-link" href="#">Hearings</a>
+        <a class="nav-link" href="#">Judges</a>
+        <a class="nav-link" href="#">Settings</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a class="nav-link" href="#">Logout</a>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <div class="main-header">
+        <h1 class="page-title">Case Management</h1>
+        <div class="actions">
+          <button id="addCaseBtn" class="btn btn-primary">+ Add Case</button>
+        </div>
+      </div>
+
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Registered Cases</h2>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table" id="caseTable" aria-describedby="caseTableCaption">
+            <caption id="caseTableCaption" class="sr-only">List of registered court cases</caption>
+            <thead>
               <tr>
                 <th>#</th>
                 <th>Case Number</th>
                 <th>Parties</th>
-                <th>Status</th>
+                <th>Type</th>
                 <th>Next Hearing</th>
-                <th>Assigned Judge</th>
+                <th>Judge</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>CIV/2025/001</td>
-                <td>John Doe vs. Jane Smith</td>
-                <td><span class="badge bg-warning text-dark">Pending</span></td>
-                <td>2025-11-05</td>
-                <td>Justice A. Omondi</td>
-                <td>
-                  <button class="btn btn-sm btn-outline-primary">View</button>
-                  <button class="btn btn-sm btn-outline-secondary">Edit</button>
-                </td>
-              </tr>
-              <!-- More rows dynamically added here -->
-            </tbody>
+            <tbody></tbody>
           </table>
         </div>
-      </div>
+      </section>
     </main>
   </div>
-</div>
 
-<!-- Add Case Modal -->
-<div class="modal fade" id="addCaseModal" tabindex="-1" aria-labelledby="addCaseModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <form class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addCaseModalLabel">Add New Case</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">Case Number</label>
-            <input type="text" class="form-control" placeholder="e.g. CIV/2025/002" required>
+  <!-- Add / Edit Modal -->
+  <div class="modal" id="caseModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-panel" role="document">
+      <form id="caseForm" class="form">
+        <header class="modal-header">
+          <h3 id="caseModalTitle">Add New Case</h3>
+          <button type="button" class="btn btn-ghost close-modal" id="closeCaseModal" aria-label="Close">✕</button>
+        </header>
+
+        <div class="modal-body">
+          <input type="hidden" id="caseIndex">
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="caseNumber">Case Number</label>
+              <input id="caseNumber" name="caseNumber" type="text" placeholder="e.g. CIV/2025/002" required>
+            </div>
+
+            <div class="form-group">
+              <label for="caseType">Case Type</label>
+              <select id="caseType" name="caseType" required>
+                <option value="">Select Type</option>
+                <option>Civil</option>
+                <option>Criminal</option>
+                <option>Family</option>
+                <option>Commercial</option>
+              </select>
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Case Type</label>
-            <select class="form-select">
-              <option selected disabled>Select Type</option>
-              <option>Civil</option>
-              <option>Criminal</option>
-              <option>Family</option>
-              <option>Commercial</option>
-            </select>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="plaintiff">Plaintiff</label>
+              <input id="plaintiff" name="plaintiff" type="text" placeholder="Plaintiff name" required>
+            </div>
+            <div class="form-group">
+              <label for="defendant">Defendant</label>
+              <input id="defendant" name="defendant" type="text" placeholder="Defendant name" required>
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Plaintiff</label>
-            <input type="text" class="form-control" placeholder="Plaintiff name">
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="judge">Assigned Judge</label>
+              <input id="judge" name="judge" type="text" placeholder="Judge's name" required>
+            </div>
+            <div class="form-group">
+              <label for="hearingDate">Next Hearing Date</label>
+              <input id="hearingDate" name="hearingDate" type="date">
+            </div>
           </div>
-          <div class="col-md-6">
-            <label class="form-label">Defendant</label>
-            <input type="text" class="form-control" placeholder="Defendant name">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Assigned Judge</label>
-            <input type="text" class="form-control" placeholder="Judge's name">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Next Hearing Date</label>
-            <input type="date" class="form-control">
-          </div>
-          <div class="col-12">
-            <label class="form-label">Remarks</label>
-            <textarea class="form-control" rows="3" placeholder="Brief description or notes"></textarea>
+
+          <div class="form-group">
+            <label for="remarks">Remarks</label>
+            <textarea id="remarks" name="remarks" rows="3" placeholder="Notes (optional)"></textarea>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-success">Save Case</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
 
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <footer class="modal-footer">
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-success">Save Case</button>
+            <button type="button" class="btn btn-secondary close-modal" id="cancelCaseBtn">Cancel</button>
+          </div>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <!-- View Modal -->
+  <div class="modal" id="viewModal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-panel" role="document">
+      <header class="modal-header">
+        <h3>Case Details</h3>
+        <button type="button" class="btn btn-ghost close-modal" id="closeViewModal" aria-label="Close">✕</button>
+      </header>
+
+      <div class="modal-body" id="viewContent"></div>
+
+      <footer class="modal-footer">
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary close-modal" id="closeViewBtn">Close</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,158 @@
+/* === General Layout === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: #f5f6fa;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* === Sidebar === */
+.sidebar {
+  width: 230px;
+  background: #002b5c;
+  color: white;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 1rem;
+}
+.sidebar h4 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.sidebar a {
+  color: #cfd8dc;
+  text-decoration: none;
+  padding: 10px 20px;
+  display: block;
+  transition: 0.3s;
+}
+.sidebar a:hover {
+  background-color: #004080;
+  color: #fff;
+}
+.sidebar hr {
+  border-color: rgba(255,255,255,0.2);
+  margin: 1rem 0;
+}
+
+/* === Main === */
+main {
+  flex: 1;
+  padding: 2rem;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+h2 {
+  color: #002b5c;
+}
+h3 {
+  margin-bottom: 1rem;
+}
+
+/* === Buttons === */
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  transition: 0.2s;
+}
+.btn-primary {
+  background: #004080;
+  color: white;
+}
+.btn-primary:hover {
+  background: #0059b3;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid #004080;
+  color: #004080;
+}
+.btn-outline:hover {
+  background: #004080;
+  color: white;
+}
+.btn-delete {
+  background: #b30000;
+  color: white;
+  border: 1px solid #b30000;
+}
+.btn-delete:hover {
+  background: #ff1a1a;
+}
+.small {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+}
+
+/* === Table === */
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+th {
+  background: #004080;
+  color: white;
+}
+tr:hover {
+  background: #f0f4ff;
+}
+
+/* === Modal === */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  width: 400px;
+  max-width: 90%;
+}
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+.modal-buttons {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
