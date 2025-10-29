@@ -12,6 +12,6 @@ It provides an interface to view, add, and organize case details such as case nu
 
  Sidebar navigation — Quick links to key system sections like Cases, Hearings, Judges, and Settings.
 
- Custom CSS styling — No external frameworks (Bootstrap removed); responsive and lightweight.
+ Custom CSS styling — No external frameworks; responsive and lightweight.
 
  Responsive layout — Works on desktop and mobile screens.
