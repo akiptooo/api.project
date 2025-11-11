@@ -1,48 +1,35 @@
-from django.shortcuts import render
-from django import forms
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from .models import Case
+from .forms import CaseForm
 
+def case_list_create(request):
+    if request.method == "POST":
+        form = CaseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Case created successfully.")
+            return redirect("cases_home")
+    else:
+        form = CaseForm()
+
+    cases = Case.objects.all().order_by("-id")
+    return render(request, "cases/case_list.html", {"form": form, "cases": cases})
 
 def home(request):
-    return render(request, "home.html")
+    return redirect("cases_home")
+
+def case_create(request):
+    return redirect("cases_home")
+
+def case_edit(request, pk):
+    return render(request, "cases/case_edit.html", {"pk": pk})
+
+def case_detail(request, pk):
+    case = get_object_or_404(Case, pk=pk)
+    return render(request, "cases/case_detail.html", {"case": case})
 
 def case_search(request):
-    return render(request, 'case_search.html')
-
-def e_filing(request):
-    return render(request, 'e_filing.html')
-
-def calendar_view(request):
-    return render(request, 'calendar.html')
-
-def directory(request):
-    return render(request, 'directory.html')
-
-def dashboard(request):
-    return render(request, 'dashboard.html')
-
-
-class CaseForm(forms.ModelForm):
-    hearing_date = forms.DateField(
-        required=False,
-        widget=forms.DateInput(attrs={"type": "date"})
-    )
-
-    class Meta:
-        model = Case
-        fields = [
-            "case_number",
-            "case_type",
-            "plaintiff",
-            "defendant",
-            "judge",
-            "hearing_date",
-            "remarks",
-        ]
-        widgets = {
-            "case_number": forms.TextInput(attrs={"placeholder": "e.g. CIV/2025/002"}),
-            "plaintiff": forms.TextInput(attrs={"placeholder": "Plaintiff name"}),
-            "defendant": forms.TextInput(attrs={"placeholder": "Defendant name"}),
-            "judge": forms.TextInput(attrs={"placeholder": "Judge's name"}),
-            "remarks": forms.Textarea(attrs={"rows": 3}),
-        }
+    query = request.GET.get("q", "")
+    cases = Case.objects.filter(title__icontains=query)
+    return render(request, "cases/case_search.html", {"cases": cases, "query": query})

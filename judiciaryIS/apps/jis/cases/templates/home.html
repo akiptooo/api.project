@@ -1,138 +1,40 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Judiciary Information System — Home</title>
-  <link rel="stylesheet" href="{% static 'style.css' %}">
-  <script defer src="{% static 'main.js' %}"></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Cases{% endblock %}
 
-  <!-- Top Taskbar -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <div class="brand-title">Judiciary Information System</div>
-    </div>
-    <div class="topbar-right">
-      {% if user.is_authenticated %}
-      <button id="logoutBtn" class="btn btn-ghost">Logout</button>
-      {% else %}
-      <a href="{% url 'login' %}" class="btn btn-ghost">Login</a>
-      {% endif %}
-    </div>
-  </header>
+{% block content %}
+<h2 class="page-title">Case Management</h2>
 
-  <div class="app">
+<div class="actions">
+    <a class="btn" href="{% url 'case_create' %}">Add Case</a>
+    <a class="btn" href="{% url 'case_search' %}">Search Cases</a>
+</div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-brand">
-        <div class="logo">⚖️</div>
-        <div class="brand-name">JIS Portal</div>
-      </div>
-
-      <nav class="nav">
-        <a class="nav-link" href="{% url 'home' %}">Home</a>
-        <a class="nav-link" href="{% url 'case_search' %}">Case Search</a>
-        <a class="nav-link" href="{% url 'e_filing' %}">E‑Filing</a>
-        <a class="nav-link" href="{% url 'calendar' %}">Court Calendar</a>
-        <a class="nav-link" href="{% url 'directory' %}">Judges & Courts</a>
-        {% if user.is_authenticated %}
-          <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-        {% endif %}
-      </nav>
-
-      <div class="sidebar-footer">
-        {% if user.is_authenticated %}
-        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-        {% else %}
-        <a class="nav-link" href="{% url 'login' %}">Login</a>
-        {% endif %}
-      </div>
-    </aside>
-
-
-    <!-- Main Content -->
-    <main class="main">
-      <div class="main-header">
-        <h1 class="page-title">Welcome</h1>
-      </div>
-
-      <!-- Hero / Search Section (integrated into dashboard layout) -->
-      <section class="card">
-        <div class="card-header">
-          <h2 class="card-title">Search for a Case</h2>
-        </div>
-
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-        </form>
-
-      </section>
-
-
-      <!-- Quick Access Tiles -->
-      <section class="quick-grid">
-        <a class="tile" href="{% url 'case_search' %}">
-          <div class="tile-icon">🔎</div>
-          <h3>Case Search</h3>
-          <p>Lookup case details and hearing dates.</p>
-        </a>
-
-        <a class="tile" href="{% url 'e_filing' %}">
-          <div class="tile-icon">📝</div>
-          <h3>E‑Filing</h3>
-          <p>Submit filings and upload documents online.</p>
-        </a>
-
-        <a class="tile" href="{% url 'calendar' %}">
-          <div class="tile-icon">📅</div>
-          <h3>Court Calendar</h3>
-          <p>View hearing schedules and courtroom allocations.</p>
-        </a>
-
-        <a class="tile" href="{% url 'directory' %}">
-          <div class="tile-icon">🏛️</div>
-          <h3>Courts & Judges</h3>
-          <p>Find court addresses and judge directories.</p>
-        </a>
-      </section>
-
-
-      <!-- Latest Notices -->
-      <section class="card">
-        <div class="card-header">
-          <h2 class="card-title">Latest Notices</h2>
-        </div>
-
-        <ul class="notice-list">
-          {% for notice in latest_notices %}
-          <li class="notice-item">
-            <strong>{{ notice.title }}</strong><br>
-            <small>{{ notice.published_at|date:'M d, Y' }}</small>
-            <p>{{ notice.excerpt }}</p>
-          </li>
-          {% empty %}
-          <li>No notices available.</li>
-          {% endfor %}
-        </ul>
-      </section>
-
-    </main>
-  </div>
-
-  <script>
-    document.addEventListener('click', function (e) {
-      const tile = e.target.closest('.tile');
-      if (tile) {
-        const evt = new CustomEvent('jis:navigate', { detail: { link: tile.getAttribute('href') }});
-        document.dispatchEvent(evt);
-      }
-    });
-  </script>
-
-</body>
-</html>
+{% if cases %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Case Number</th>
+            <th>Type</th>
+            <th>Plaintiff</th>
+            <th>Defendant</th>
+            <th>Judge</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for case in cases %}
+        <tr>
+            <td>{{ case.case_number }}</td>
+            <td>{{ case.case_type }}</td>
+            <td>{{ case.plaintiff }}</td>
+            <td>{{ case.defendant }}</td>
+            <td>{{ case.judge }}</td>
+            <td><a class="link" href="{% url 'case_detail' case.id %}">View</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No cases available.</p>
+{% endif %}
+{% endblock %}

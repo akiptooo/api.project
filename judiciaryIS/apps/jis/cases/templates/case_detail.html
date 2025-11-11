@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Case Details{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Case Details</h2>
+
+<div class="card">
+    <p><strong>Case Number:</strong> {{ case.case_number }}</p>
+    <p><strong>Type:</strong> {{ case.case_type }}</p>
+    <p><strong>Plaintiff:</strong> {{ case.plaintiff }}</p>
+    <p><strong>Defendant:</strong> {{ case.defendant }}</p>
+    <p><strong>Judge:</strong> {{ case.judge }}</p>
+    <p><strong>Hearing Date:</strong> {{ case.hearing_date }}</p>
+    <p><strong>Remarks:</strong> {{ case.remarks }}</p>
+</div>
+
+<div class="actions">
+    <a class="btn" href="{% url 'case_edit' case.id %}">Edit Case</a>
+    <a class="btn" href="{% url 'cases_home' %}">Back</a>
+</div>
+{% endblock %}
