@@ -5,17 +5,28 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
+from django.contrib.auth.decorators import user_passes_test
+from django.views.generic import UpdateView, DeleteView
+from django.contrib.auth.mixins import UserPassesTestMixin
 
-
+# Import your models and forms
 from cases.models import Case
 from .models import CustomUser
-from .forms import UserSignUpForm  # Updated import for the new form
+from .forms import UserSignUpForm  
 
+class RegistrarRequiredMixin(UserPassesTestMixin):
+    """Mixin to ensure user is a registrar"""
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.role == CustomUser.Role.REGISTRAR
+    
+    def handle_no_permission(self):
+        messages.error(self.request, "You don't have permission to access this page.")
+        return redirect('/registrar/login/')
 
 def register(request):
     if request.method == 'POST':
         print("=== REGISTRATION DEBUG ===")
-        form = UserSignUpForm(request.POST)  # Using the new form
+        form = UserSignUpForm(request.POST)  
         print(f"Form valid: {form.is_valid()}")
         
         if form.is_valid():
@@ -31,7 +42,7 @@ def register(request):
             print(f"Form errors: {form.errors}")
             messages.error(request, "Please correct the errors below.")
     else:
-        form = UserSignUpForm()  # Using the new form
+        form = UserSignUpForm()  
     
     return render(request, 'registrar/register.html', {'form': form})
 
@@ -85,7 +96,7 @@ def registrar_dashboard(request):
     Shows the registrar's dashboard.
     The main job is to view and assign cases.
     """
-    # Ensure only registrars can access this
+    
     if request.user.role != CustomUser.Role.REGISTRAR:
         return HttpResponseForbidden("You are not authorized to view this page.")
     
@@ -242,3 +253,69 @@ def debug_urls(request):
     html += "</ul>"
     
     return HttpResponse(html)
+
+def registrar_required(function=None):
+    """Decorator to ensure user is a registrar"""
+    actual_decorator = user_passes_test(
+        lambda u: u.is_authenticated and u.role == CustomUser.Role.REGISTRAR,
+        login_url='/registrar/login/'
+    )
+    if function:
+        return actual_decorator(function)
+    return actual_decorator
+
+@registrar_required
+def user_management(request):
+    """User management dashboard for registrars"""
+    users = CustomUser.objects.all().order_by('-date_joined')
+    
+    # Get statistics
+    total_users = users.count()
+    lawyers = users.filter(role=CustomUser.Role.LAWYER).count()
+    judges = users.filter(role=CustomUser.Role.JUDGE).count()
+    registrars = users.filter(role=CustomUser.Role.REGISTRAR).count()
+    
+    context = {
+        'users': users,
+        'total_users': total_users,
+        'lawyers_count': lawyers,
+        'judges_count': judges,
+        'registrars_count': registrars,
+    }
+    return render(request, 'registrar/user_management.html', context)
+
+class UserUpdateView(RegistrarRequiredMixin, UpdateView):
+    """View for registrars to edit user information"""
+    model = CustomUser
+    template_name = 'registrar/user_edit.html'
+    fields = ['username', 'email', 'first_name', 'last_name', 'role', 'is_active']
+    success_url = reverse_lazy('user_management')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['editing_user'] = self.get_object()
+        return context
+
+class UserDeleteView(RegistrarRequiredMixin, DeleteView):
+    """View for registrars to delete users"""
+    model = CustomUser
+    template_name = 'registrar/user_confirm_delete.html'
+    success_url = reverse_lazy('user_management')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['deleting_user'] = self.get_object()
+        return context
+
+@registrar_required
+def toggle_user_status(request, user_id):
+    """Quick toggle for user active status"""
+    if request.method == 'POST':
+        user = get_object_or_404(CustomUser, id=user_id)
+        user.is_active = not user.is_active
+        user.save()
+        
+        action = "activated" if user.is_active else "deactivated"
+        messages.success(request, f"User {user.username} has been {action}.")
+    
+    return redirect('user_management')

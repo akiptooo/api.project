@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}User Management - Registrar{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>User Management</h1>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <!-- User Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card bg-primary text-white">
+                <h3>{{ total_users }}</h3>
+                <p>Total Users</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-success text-white">
+                <h3>{{ lawyers_count }}</h3>
+                <p>Lawyers</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-info text-white">
+                <h3>{{ judges_count }}</h3>
+                <p>Judges</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-warning text-dark">
+                <h3>{{ registrars_count }}</h3>
+                <p>Registrars</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">All System Users</h4>
+        </div>
+        <div class="card-body">
+            {% if users %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Date Joined</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <strong>{{ user.username }}</strong>
+                                {% if user.is_superuser %}
+                                <span class="badge bg-danger">Admin</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.get_full_name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="badge bg-{{ user.role|lower }}">
+                                    {{ user.get_role_display }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.is_active %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                            <td>
+                                {% if user.last_login %}
+                                {{ user.last_login|date:"M d, Y" }}
+                                {% else %}
+                                <span class="text-muted">Never</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'user_edit' user.pk %}" class="btn btn-outline-primary">
+                                        Edit
+                                    </a>
+                                    
+                                    <!-- Quick status toggle -->
+                                    <form method="POST" action="{% url 'toggle_user_status' user.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        {% if user.is_active %}
+                                        <button type="submit" class="btn btn-outline-warning" 
+                                                title="Deactivate user">
+                                            Deactivate
+                                        </button>
+                                        {% else %}
+                                        <button type="submit" class="btn btn-outline-success" 
+                                                title="Activate user">
+                                            Activate
+                                        </button>
+                                        {% endif %}
+                                    </form>
+                                    
+                                    <!-- Delete button (with confirmation modal) -->
+                                    {% if not user.is_superuser and user != request.user %}
+                                    <button type="button" class="btn btn-outline-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal{{ user.id }}">
+                                        Delete
+                                    </button>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Delete Confirmation Modal -->
+                                {% if not user.is_superuser and user != request.user %}
+                                <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete user <strong>{{ user.username }}</strong>?</p>
+                                                <p class="text-danger">This action cannot be undone.</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form method="POST" action="{% url 'user_delete' user.pk %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-danger">Delete User</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <h5>No users found</h5>
+                <p class="text-muted">There are no users in the system yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Quick Actions</h5>
+            <div class="btn-group">
+                <a href="{% url 'register' %}" class="btn btn-success">
+                    <i class="fas fa-user-plus"></i> Register New User
+                </a>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-card {
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.stat-card h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stat-card p {
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.bg-lawyer { background-color: #28a745 !important; }
+.bg-judge { background-color: #17a2b8 !important; }
+.bg-registrar { background-color: #ffc107 !important; color: #000 !important; }
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.btn-group-sm .btn {
+    margin-right: 5px;
+}
+</style>
+
+<!-- Bootstrap JS for modals -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

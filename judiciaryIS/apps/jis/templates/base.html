@@ -30,6 +30,9 @@
             <a href="{% url 'login' %}">Login</a>
             <a href="{% url 'register' %}">Register</a>
         {% endif %}
+        {% if user.role == 'REGISTRAR' %}
+        <a href="{% url 'user_management' %}">User Management</a>
+        {% endif %}
     </nav>
 
     <div class="container">
