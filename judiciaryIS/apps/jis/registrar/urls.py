@@ -20,5 +20,5 @@ urlpatterns = [
     path('debug-templates/', views.debug_templates, name='debug_templates'),
     path('debug-urls/', views.debug_urls, name='debug_urls'),
     path('test/', views.test_page, name='test_page'),
-    path('', views.home, name='home'),
+    
 ]

@@ -10,9 +10,7 @@ class LawyerRequiredMixin(UserPassesTestMixin):
         return self.request.user.is_authenticated and self.request.user.role == CustomUser.Role.LAWYER
 
 class CaseListView(LoginRequiredMixin, LawyerRequiredMixin, ListView):
-    """
-    View for a lawyer to see a list of their filed cases.
-    """
+    
     model = Case
     template_name = 'cases/case_list.html'
     context_object_name = 'case_list'
@@ -34,9 +32,7 @@ class CaseListView(LoginRequiredMixin, LawyerRequiredMixin, ListView):
         context['dismissed_cases'] = cases.filter(status=Case.Status.DISMISSED).count()
         
         return context
-    """
-    View for a lawyer to see a list of their filed cases.
-    """
+   
     model = Case
     template_name = 'cases/case_list.html'
     context_object_name = 'case_list'
