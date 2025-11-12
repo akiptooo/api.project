@@ -4,4 +4,4 @@ from .models import Judge
 class JudgeForm(forms.ModelForm):
     class Meta:
         model = Judge
-        fields = ['first_name', 'last_name', 'position', 'email']  # adjust fields as needed
+        fields = ['first_name', 'last_name', 'position', 'email']

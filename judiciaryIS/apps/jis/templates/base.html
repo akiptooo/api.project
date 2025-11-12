@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Judiciary System{% endblock %}</title>
+    <!-- Load your global CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <nav>
+        <a href="{% url 'home' %}"><strong>JIS Home</strong></a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard_redirect' %}">Dashboard</a>
+            
+            {% if user.role == 'LAWYER' %}
+                <a href="{% url 'cases:case_list' %}">My Cases</a>
+                <a href="{% url 'cases:case_create' %}">File New Case</a>
+            {% endif %}
+
+            <div class="user-info">
+                Welcome, {{ user.username }} ({{ user.get_role_display }})
+                <form method="POST" action="{% url 'logout' %}" class="logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

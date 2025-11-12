@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Case - Judiciary System{% endblock %}
+
+{% block content %}
+<h1>Edit Case #{{ pk }}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Changes</button>
+    <a href="{% url 'cases_home' %}" class="btn-secondary">Cancel</a>
+</form>
+{% endblock %}

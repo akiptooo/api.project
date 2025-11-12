@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}My Cases{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>My Cases</h1>
+    
+    <div class="user-info card">
+        <div class="card-body">
+            <h5 class="card-title">Welcome, {{ user.get_full_name|default:user.username }}</h5>
+            <p class="card-text"><strong>Role:</strong> {{ user.get_role_display }}</p>
+            <p class="card-text"><strong>Total Cases:</strong> {{ case_list.count }}</p>
+        </div>
+    </div>
+
+    <!-- Case Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card bg-primary text-white">
+                <h3>{{ case_list.count }}</h3>
+                <p>Total Cases</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-warning text-dark">
+                <h3>{{ pending_cases }}</h3>
+                <p>Pending</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-info text-white">
+                <h3>{{ in_progress_cases }}</h3>
+                <p>In Progress</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-success text-white">
+                <h3>{{ closed_cases }}</h3>
+                <p>Closed</p>
+            </div>
+        </div>
+    </div>
+
+    {% if case_list %}
+        <div class="cases-list">
+            <h2>Your Filed Cases</h2>
+            {% for case in case_list %}
+                <div class="case-card card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="card-title">{{ case.title }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">Case #: {{ case.case_number }}</h6>
+                                <p class="card-text">{{ case.description|truncatewords:30 }}</p>
+                                <div class="case-meta">
+                                    <span class="badge bg-{{ case.status|lower }}">{{ case.get_status_display }}</span>
+                                    <span class="badge bg-secondary">{{ case.get_case_type_display }}</span>
+                                    <span class="badge bg-{{ case.priority|lower }}">{{ case.get_priority_display }}</span>
+                                    {% if case.assigned_judge %}
+                                        <span class="badge bg-info">Judge: {{ case.assigned_judge.get_full_name }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <p class="text-muted">Filed: {{ case.date_filed|date:"M d, Y" }}</p>
+                                <p class="text-muted">Documents: {{ case.documents.count }}</p>
+                                <p class="text-muted">Hearings: {{ case.hearings.count }}</p>
+                                <a href="{% url 'cases:case_detail' case.pk %}" class="btn btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-cases card text-center">
+            <div class="card-body">
+                <h3>No Cases Filed Yet</h3>
+                <p>You haven't filed any cases yet. Start by filing your first case.</p>
+                <a href="{% url 'cases:case_create' %}" class="btn btn-primary btn-lg">File Your First Case</a>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="action-buttons mt-4">
+        <a href="{% url 'cases:case_create' %}" class="btn btn-success">File New Case</a>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
+
+<style>
+.stat-card {
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stat-card p {
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.case-card {
+    transition: transform 0.2s ease;
+}
+
+.case-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.badge {
+    margin-right: 5px;
+}
+
+.bg-pending { background-color: #ffc107 !important; }
+.bg-in_progress { background-color: #17a2b8 !important; }
+.bg-under_review { background-color: #6c757d !important; }
+.bg-closed { background-color: #28a745 !important; }
+.bg-dismissed { background-color: #dc3545 !important; }
+
+.bg-low { background-color: #28a745 !important; }
+.bg-medium { background-color: #ffc107 !important; color: #000 !important; }
+.bg-high { background-color: #dc3545 !important; }
+</style>
+{% endblock %}

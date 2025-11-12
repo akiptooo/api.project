@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Registrar Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Registrar Dashboard</h1>
+    
+    <div class="welcome-card card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Welcome, {{ user.get_full_name|default:user.username }}</h5>
+            <p class="card-text">You are logged in as a <strong>Registrar</strong>. Manage case assignments and monitor system activity.</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card bg-primary text-white">
+                <h3>{{ unassigned_cases.count }}</h3>
+                <p>Unassigned Cases</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-success text-white">
+                <h3>{{ judges.count }}</h3>
+                <p>Available Judges</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-info text-white">
+                <h3>{% widthratio unassigned_cases.count judges.count 1 %}</h3>
+                <p>Avg. Cases per Judge</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-warning text-dark">
+                <h3>{{ total_cases }}</h3>
+                <p>Total Cases</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unassigned Cases Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Unassigned Cases Requiring Action</h3>
+        </div>
+        <div class="card-body">
+            {% if unassigned_cases %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Case Number</th>
+                                <th>Title</th>
+                                <th>Filed By</th>
+                                <th>Date Filed</th>
+                                <th>Type</th>
+                                <th>Priority</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for case in unassigned_cases %}
+                            <tr>
+                                <td>{{ case.case_number }}</td>
+                                <td>{{ case.title }}</td>
+                                <td>{{ case.filed_by_lawyer.get_full_name }}</td>
+                                <td>{{ case.date_filed|date:"M d, Y" }}</td>
+                                <td><span class="badge bg-secondary">{{ case.get_case_type_display }}</span></td>
+                                <td><span class="badge bg-{{ case.priority|lower }}">{{ case.get_priority_display }}</span></td>
+                                <td>
+                                    <form method="POST" action="{% url 'assign_case' case.id %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <select name="judge_id" class="form-select form-select-sm d-inline" style="width: auto;">
+                                            <option value="">Select Judge</option>
+                                            {% for judge in judges %}
+                                                <option value="{{ judge.id }}">{{ judge.get_full_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm">Assign</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <h5>No unassigned cases</h5>
+                    <p class="text-muted">All cases have been assigned to judges.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Recent Case Filings</h4>
+                </div>
+                <div class="card-body">
+                    {% for case in recent_cases %}
+                    <div class="activity-item mb-3">
+                        <strong>{{ case.case_number }}</strong>
+                        <p class="mb-1">{{ case.title }}</p>
+                        <small class="text-muted">Filed by {{ case.filed_by_lawyer.get_full_name }} on {{ case.date_filed|date:"M d, Y" }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Upcoming Hearings</h4>
+                </div>
+                <div class="card-body">
+                    {% for hearing in upcoming_hearings %}
+                    <div class="activity-item mb-3">
+                        <strong>{{ hearing.case.case_number }}</strong>
+                        <p class="mb-1">{{ hearing.hearing_type }} Hearing</p>
+                        <small class="text-muted">{{ hearing.hearing_date|date:"M d, Y H:i" }} - {{ hearing.location }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-card {
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.stat-card h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.stat-card p {
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.activity-item {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Lawyer Sign Up{% endblock %}
+
+{% block content %}
+    <h2>Lawyer Sign Up</h2>
+    <p>Create an account to start filing cases.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Login here</a>.</p>
+{% endblock %}

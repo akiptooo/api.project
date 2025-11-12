@@ -1,28 +1,83 @@
 from django import forms
-from .models import Case
+from .models import Case, Hearing, Document
 
-
-class CaseForm(forms.ModelForm):
-    hearing_date = forms.DateField(
-        required=False,
-        widget=forms.DateInput(attrs={"type": "date"})
-    )
-
+class CaseCreateForm(forms.ModelForm):
+    """Form for a lawyer to create a new case."""
     class Meta:
         model = Case
-        fields = [
-            "case_number",
-            "case_type",
-            "plaintiff",
-            "defendant",
-            "judge",
-            "hearing_date",
-            "remarks",
-        ]
+        fields = ['title', 'description']
         widgets = {
-            "case_number": forms.TextInput(attrs={"placeholder": "e.g. CIV/2025/002"}),
-            "plaintiff": forms.TextInput(attrs={"placeholder": "Plaintiff name"}),
-            "defendant": forms.TextInput(attrs={"placeholder": "Defendant name"}),
-            "judge": forms.TextInput(attrs={"placeholder": "Judge's name"}),
-            "remarks": forms.Textarea(attrs={"rows": 3}),
+            'description': forms.Textarea(attrs={'rows': 6}),
         }
+
+class CaseStatusUpdateForm(forms.ModelForm):
+    """Form for a Judge or Registrar to update the case status."""
+    class Meta:
+        model = Case
+        fields = ['status']
+
+class HearingCreateForm(forms.ModelForm):
+    """Form for a Judge or Registrar to schedule a hearing."""
+    class Meta:
+        model = Hearing
+        fields = ['hearing_date', 'location', 'notes']
+        widgets = {
+            'hearing_date': forms.DateTimeInput(
+                attrs={'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'notes': forms.Textarea(attrs={'rows': 4}),
+        }
+    
+    # This is necessary to make the HTML5 widget work with Django
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'hearing_date' in self.fields:
+            self.fields['hearing_date'].input_formats = ('%Y-%m-%dT%H:%M',)
+
+class DocumentUploadForm(forms.ModelForm):
+    """Form for any authenticated user to upload a document to a case."""
+    class Meta:
+        model = Document
+        fields = ['description', 'file']from django import forms
+from .models import Case, Hearing, Document
+
+class CaseCreateForm(forms.ModelForm):
+    """Form for a lawyer to create a new case."""
+    class Meta:
+        model = Case
+        fields = ['title', 'description']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 6}),
+        }
+
+class CaseStatusUpdateForm(forms.ModelForm):
+    """Form for a Judge or Registrar to update the case status."""
+    class Meta:
+        model = Case
+        fields = ['status']
+
+class HearingCreateForm(forms.ModelForm):
+    """Form for a Judge or Registrar to schedule a hearing."""
+    class Meta:
+        model = Hearing
+        fields = ['hearing_date', 'location', 'notes']
+        widgets = {
+            'hearing_date': forms.DateTimeInput(
+                attrs={'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M'
+            ),
+            'notes': forms.Textarea(attrs={'rows': 4}),
+        }
+    
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'hearing_date' in self.fields:
+            self.fields['hearing_date'].input_formats = ('%Y-%m-%dT%H:%M',)
+
+class DocumentUploadForm(forms.ModelForm):
+    """Form for any authenticated user to upload a document to a case."""
+    class Meta:
+        model = Document
+        fields = ['description', 'file']

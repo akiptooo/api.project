@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}  <!-- LOAD STATIC AT THE TOP -->
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <h2>Create Account</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-error">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <!-- Your form fields here -->
+        <div class="form-group">
+            <label for="id_username">Username:</label>
+            {{ form.username }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_first_name">First Name:</label>
+            {{ form.first_name }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_last_name">Last Name:</label>
+            {{ form.last_name }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_role">Select Your Role:</label>
+            <select name="role" id="id_role" class="form-control" required>
+                <option value="">Choose a role...</option>
+                <option value="LAWYER">Lawyer - File and manage cases</option>
+                <option value="REGISTRAR">Registrar - Assign cases to judges</option>
+                <option value="JUDGE">Judge - Adjudicate assigned cases</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="id_password1">Password:</label>
+            {{ form.password1 }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_password2">Confirm Password:</label>
+            {{ form.password2 }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+
+    <p class="auth-alt">
+        Already have an account? <a href="{% url 'login' %}">Login here</a>
+    </p>
+</div>
+{% endblock %}

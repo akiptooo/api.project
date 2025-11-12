@@ -16,11 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from django.shortcuts import redirect
+from django.views.generic import RedirectView
+
+
+from registrar import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    path('', include('cases.urls')),       # home routed to cases home
-    path('judges/', include('judges.urls')),
     path('registrar/', include('registrar.urls')),
+    path('cases/', include('cases.urls')),
+    path('judges/', include('judges.urls')),
+    
+    # Use home page as root
+    path('', views.home, name='home'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

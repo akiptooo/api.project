@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Judge Dashboard{% endblock %}
+
+{% block content %}
+    <h1>Judge Dashboard</h1>
+    <h2>My Assigned Cases</h2>
+
+    {% if assigned_cases %}
+        <ul class="card-list">
+        {% for case in assigned_cases %}
+            <li class="card">
+                <div class="card-body">
+                    <strong>
+                        <a href="{% url 'cases:case_detail' case.pk %}">{{ case.case_number }}: {{ case.title }}</a>
+                    </strong>
+                    <span style="float: right; padding: 2px 5px; background: #eee; border-radius: 4px;">{{ case.get_status_display }}</span>
+                    <p><strong>Filed by:</strong> {{ case.filed_by_lawyer.username }}</p>
+                </div>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no cases assigned to you at this time.</p>
+    {% endif %}
+
+{% endblock %}

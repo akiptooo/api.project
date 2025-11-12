@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Case: {{ case.case_number }}{% endblock %}
+
+{% block content %}
+    <h1>{{ case.title }}</h1>
+    <span style="padding: 2px 5px; background: #eee; border-radius: 4px; font-size: 0.9rem;">{{ case.get_status_display }}</span>
+    <hr>
+    
+    <h3>Case Details</h3>
+    <ul>
+        <li><strong>Case Number:</strong> {{ case.case_number }}</li>
+        <li><strong>Date Filed:</strong> {{ case.date_filed }}</li>
+        <li><strong>Filed By:</strong> {{ case.filed_by_lawyer.get_full_name|default:case.filed_by_lawyer.username }}</li>
+        <li><strong>Assigned Judge:</strong> {{ case.assigned_judge.get_full_name|default:"Not Yet Assigned" }}</li>
+    </ul>
+
+    <h3>Description</h3>
+    <p>{{ case.description|linebreaks }}</p>
+
+    <hr>
+
+    <h3>Hearings</h3>
+    {% if hearings %}
+        <ul>
+        {% for hearing in hearings %}
+            <li>
+                <strong>{{ hearing.hearing_date|date:"F d, Y \a\t g:i A" }}</strong> in {{ hearing.location }}
+                {% if hearing.notes %}<p>Notes: {{ hearing.notes|linebreaks }}</p>{% endif %}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hearings have been scheduled for this case.</p>
+    {% endif %}
+    
+
+    <hr>
+
+    <h3>Documents</h3>
+    {% if documents %}
+        <ul>
+        {% for doc in documents %}
+            <li>
+                <a href="{{ doc.file.url }}" target="_blank">{{ doc.description }}</a>
+                <span style="color: #666; font-size: 0.9rem;">(Uploaded by {{ doc.uploaded_by.username }} on {{ doc.uploaded_at|date:"Y-m-d" }})</span>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No documents have been uploaded for this case.</p>
+    {% endif %}
+    
+
+{% endblock %}

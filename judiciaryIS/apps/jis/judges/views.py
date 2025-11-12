@@ -1,25 +1,25 @@
 from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Judge
-from .forms import JudgeForm
+from django.contrib.auth.decorators import login_required
+from cases.models import Case
+from registrar.models import CustomUser
 
-def judge_edit(request, pk):
-    return render(request, "judges/judge_edit.html", {"pk": pk})
+@login_required
+def judge_dashboard(request):
+    """
+    Shows the judge's dashboard.
+    Lists all cases assigned to this judge.
+    """
+    # Ensure only judges can access this
+    if request.user.role != CustomUser.Role.JUDGE:
+        return redirect('dashboard_redirect')
+        
+    # Get all cases assigned to the current judge
+    assigned_cases = Case.objects.filter(
+        assigned_judge=request.user
+    ).order_by('status', '-date_filed')
 
+    context = {
+        'assigned_cases': assigned_cases,
+    }
+    return render(request, 'judges/dashboard.html', context)
 
-def judges_list_create(request):
-    if request.method == "POST":
-        form = JudgeForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Judge added.")
-            return redirect("judges")
-    else:
-        form = JudgeForm()
-
-    judges = Judge.objects.all().order_by("last_name")
-
-    return render(request, "judges/judges_list.html", {
-        "form": form,
-        "judges": judges,
-    })
